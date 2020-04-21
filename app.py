@@ -4,6 +4,9 @@ from flask import Flask
 from flask_restful import Resource, Api
 import nmap
 
+app = Flask(__name__)
+Api = Api(app)
+
 scanner = nmap.PortScanner()
 
 print("Welcome, this is a simple nmap automation tool")
@@ -26,6 +29,7 @@ if resp == '1':
     print("Ip Status: ", scanner[ip_addr].state())
     print(scanner[ip_addr].all_protocols())
     print("Open Ports: ", scanner[ip_addr]['tcp'].keys())
+    port = [scanner[ip_addr]['tcp'].keys()]
 elif resp == '2':
     print("Nmap Version: ", scanner.nmap_version())
     scanner.scan(ip_addr, '1-1024', '-v -sU')
@@ -40,18 +44,27 @@ elif resp == '3':
     print("Ip Status: ", scanner[ip_addr].state())
     print(scanner[ip_addr].all_protocols())
     print("Open Ports: ", scanner[ip_addr]['tcp'].keys())
+
 elif resp >= '4':
     print("Please enter a valid option")
 
-app = Flask(__name__)
-Api = Api(app)
+myitem = []
 
 
 class openPorts(Resource):
 
     @app.route('/openport/<string:name>')
-    def get(self, name):
-        return {'openport': name}
+    def get(name):
+        for item in myitem:
+            if item['name'] == name:
+                return item
+
+    def post(self, name):
+        item = {'name': name, 'price': 120, 'Nmap Version:': scanner.nmap_version(),
+                'Scanner Info': scanner.scaninfo(),
+                'Ip Status: ': scanner[ip_addr].state(),'open ports':[scanner[ip_addr]['tcp'].keys()]}
+        myitem.append(item)
+        return item
 
 
 Api.add_resource(openPorts, '/openport/<string:name>')
