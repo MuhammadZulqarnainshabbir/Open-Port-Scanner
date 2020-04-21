@@ -62,7 +62,7 @@ class openPorts(Resource):
     def post(self, name):
         item = {'name': name, 'price': 120, 'Nmap Version:': scanner.nmap_version(),
                 'Scanner Info': scanner.scaninfo(),
-                'Ip Status: ': scanner[ip_addr].state(),'open ports':[scanner[ip_addr]['tcp'].keys()]}
+                'Ip Status: ': scanner[ip_addr].state()}
         myitem.append(item)
         return item
 
